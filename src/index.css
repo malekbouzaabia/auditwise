@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+.slick-slide {
+  display: flex;
+  justify-content: center;
+}
