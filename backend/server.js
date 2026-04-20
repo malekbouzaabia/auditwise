@@ -16,7 +16,7 @@ app.use(express.json())
 app.use('/api/auth',     registerRoutes)
 app.use('/api/auth',     authRoutes)
 app.use('/api/sessions', require('./routes/Chatroutes'))
-app.use('/api/pdf',      require('./routes/pdfRoutes'))
+app.use('/api/pdf',      require('./routes/pdfroutes'))
 
 // ── Lecture Excel au démarrage ───────────────────────────────
 // Place ton fichier Excel dans backend/ avec ce nom exact
