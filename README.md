@@ -1,73 +1,47 @@
-# React + TypeScript + Vite
+# 🛡️ AuditWise — Plateforme d'Audit ISO 27001:2022
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application web IA d'auto-évaluation ISO 27001:2022
 
-Currently, two official plugins are available:
+## Stack Technique
+- **Frontend** : React + Vite
+- **Backend** : Node.js + Express
+- **Base de données** : MongoDB Atlas
+- **IA** : Groq API (llama-3.3-70b-versatile)
+- **PDF** : PDFKit
+- **Auth** : JWT + MFA par email
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Installation locale
 
-## React Compiler
+```bash
+# Backend
+cd backend
+npm install
+cp ../.env.example .env
+# Remplir .env avec vos credentials
+node server.js
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Frontend
+cd ..
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Déploiement Render
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Créez un compte sur [render.com](https://render.com)
+2. Connectez votre repo GitHub
+3. Créez un **Web Service** pour le backend :
+   - Root Dir: `backend`
+   - Build: `npm install`
+   - Start: `node server.js`
+4. Créez un **Static Site** pour le frontend :
+   - Build: `npm install && npx vite build`
+   - Publish: `dist`
+5. Configurez les variables d'environnement
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Variables d'environnement
+
+Voir `.env.example`
+
+## Auteur
+Projet PFE — AuditWise AI

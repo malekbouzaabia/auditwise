@@ -1,11 +1,19 @@
 import Navbar from '../components/Navbar.jsx'
 import SecurityCard from '../components/SecurityCard.jsx'
 
-
-export default function Home({ onSignUp, onSignIn, onAbout }) {
+export default function Home({ onSignUp, onSignIn, onAbout, onDashboard, onAdmin, onChatBot, onContact, user, onLogout }) {
   return (
     <>
-      <Navbar onSignUp={onSignUp} onSignIn={onSignIn} onAbout={onAbout} />
+      <Navbar
+        onSignUp={onSignUp}
+        onSignIn={onSignIn}
+        onAbout={onAbout}
+        onDashboard={onDashboard}
+        onChatBot={onChatBot}
+        onContact={onContact}
+        user={user}
+        onLogout={onLogout}
+      />
 
       <main className="hero">
         <div style={{
@@ -22,7 +30,7 @@ export default function Home({ onSignUp, onSignIn, onAbout }) {
         {/* ══ TITRE ══ */}
         <section style={{ position: 'relative', zIndex: 1, width: '100%', textAlign: 'center', padding: '64px 24px 44px' }}>
 
-          <div className="hero-badge">🛡️ Plateforme de sécurité IA</div>
+          <div className="hero-badge">📊plateforme d'audit de conformité ISO 27001</div>
 
           <h1 className="hero-title">
             Atteignez la conformité <span>ISO 27001</span> en toute confiance
@@ -33,19 +41,64 @@ export default function Home({ onSignUp, onSignIn, onAbout }) {
           </p>
 
           <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', marginTop: '28px' }}>
-            
+            {user ? (
+              <button className="btn-primary" onClick={onChatBot}>
+                🤖 Lancer l'audit ISO 27001
+              </button>
+            ) : (
+              <button className="btn-primary" onClick={onSignIn}>
+                Commencer l'audit →
+              </button>
+            )}
             <button className="btn-ghost" onClick={onAbout}>En savoir plus →</button>
           </div>
+
+          {/* Message de bienvenue si connecté */}
+          {user && (
+            <div style={{
+              marginTop: '20px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              background: 'rgba(27,111,216,0.08)',
+              border: '1px solid rgba(27,111,216,0.15)',
+              borderRadius: '100px',
+              padding: '8px 20px',
+            }}>
+              <div style={{
+                width: '28px', height: '28px',
+                background: 'linear-gradient(135deg, #1b6fd8, #3b9eff)',
+                borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '11px', fontWeight: '800', color: 'white',
+                fontFamily: '"Sora", sans-serif',
+              }}>
+                {getInitials(user)}
+              </div>
+              <span style={{ fontSize: '13px', fontWeight: '600', color: '#0b1f45' }}>
+                Bienvenue, <strong>{getName(user)}</strong> 👋
+              </span>
+            </div>
+          )}
         </section>
 
         {/* ══ CARD ══ */}
         <section style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1100px', padding: '0 40px 48px' }}>
           <SecurityCard />
         </section>
-
-        {/* ══ STATS ══ */}
-        
       </main>
     </>
   )
+}
+
+function getInitials(u) {
+  if (!u) return '?'
+  const name = u.name || u.username || u.email || ''
+  const parts = name.trim().split(' ')
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+  return name.slice(0, 2).toUpperCase()
+}
+
+function getName(u) {
+  return u?.name || u?.username || u?.email?.split('@')[0] || 'Utilisateur'
 }

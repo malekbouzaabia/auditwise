@@ -125,7 +125,7 @@ export default function About({ onBack, onSignUp }) {
           color: '#3b9eff', letterSpacing: '0.8px', textTransform: 'uppercase',
           marginBottom: '18px', position: 'relative', zIndex: 2,
         }}>
-          🛡️ IFSentry — Plateforme de sécurité
+          🤖 plateforme d'audit de conformité ISO 27001 
         </div>
 
         {/* Titre */}
@@ -142,7 +142,7 @@ export default function About({ onBack, onSignUp }) {
           fontSize: '16px', color: 'rgba(255,255,255,0.7)',
           maxWidth: '480px', lineHeight: '1.75', position: 'relative', zIndex: 2,
         }}>
-          Découvrez qui nous sommes, notre mission et la technologie qui propulse IFSentry vers l'excellence.
+          Découvrez qui nous sommes, notre mission et la technologie qui propulse AuditWise vers l'excellence.
         </p>
 
         {/* Stats */}

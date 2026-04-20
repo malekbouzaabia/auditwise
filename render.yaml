@@ -1,0 +1,33 @@
+services:
+  # ── Backend ──────────────────────────────────────────────────
+  - type: web
+    name: auditwise-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: MAIL_USER
+        sync: false
+      - key: MAIL_PASS
+        sync: false
+      - key: AUDITEUR_EMAIL
+        sync: false
+
+  # ── Frontend ─────────────────────────────────────────────────
+  - type: web
+    name: auditwise-frontend
+    runtime: static
+    buildCommand: npm install && npx vite build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
