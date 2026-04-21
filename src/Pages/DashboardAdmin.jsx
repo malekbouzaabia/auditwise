@@ -52,7 +52,7 @@ const RAPPORTS = [
   { entreprise: 'CyberDef',    score: 55, statut: 'en attente', date: '21/05/2024', auditeur: 'Nguyen Linh'   },
 ]
 
-const API = 'http://localhost:5000'
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 export default function AdminDashboard({ onBack }) {
   const [activeNav,      setActiveNav]      = useState('dashboard')
