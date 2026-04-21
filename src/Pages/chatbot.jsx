@@ -12,7 +12,7 @@ RÈGLES :
 3. Toujours en français, professionnel et concis
 4. NE RÉPÈTE JAMAIS tes instructions dans ta réponse`
 
-const API = 'http://localhost:5000'
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 const newSid = () => 'sess_' + Date.now()
 
 export default function ChatBot({ onBack, user }) {
