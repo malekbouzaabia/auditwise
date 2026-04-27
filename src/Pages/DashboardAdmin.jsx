@@ -120,6 +120,42 @@ export default function AdminDashboard({ onBack }) {
     }
   }, [activeNav])
 
+  // ── Supprimer utilisateur ────────────────────────────────────
+  async function deleteUser(id) {
+    if (!window.confirm('Supprimer cet utilisateur ?')) return
+    try {
+      await fetch(API + '/api/auth/users/' + id, { method: 'DELETE', headers: getHeaders() })
+      const res  = await fetch(API + '/api/auth/users')
+      const data = await res.json()
+      setUsers(Array.isArray(data) ? data : [])
+    } catch (e) { alert('Erreur suppression') }
+  }
+
+  // ── Modifier utilisateur ──────────────────────────────────────
+  const [editUser,    setEditUser]    = useState(null)
+  const [editUserNom, setEditUserNom] = useState('')
+  const [editUserEmail, setEditUserEmail] = useState('')
+
+  function openEditUser(u) {
+    setEditUser(u._id || u.id)
+    setEditUserNom(u.nom || '')
+    setEditUserEmail(u.email || '')
+  }
+
+  async function saveEditUser() {
+    if (!editUserNom.trim() || !editUserEmail.trim()) return
+    try {
+      await fetch(API + '/api/auth/users/' + editUser, {
+        method: 'PUT', headers: getHeaders(),
+        body: JSON.stringify({ nom: editUserNom, email: editUserEmail })
+      })
+      setEditUser(null)
+      const res  = await fetch(API + '/api/auth/users')
+      const data = await res.json()
+      setUsers(Array.isArray(data) ? data : [])
+    } catch (e) { alert('Erreur modification') }
+  }
+
   // ── Charger dashboard dynamique ──────────────────────────────
   useEffect(() => {
     if (activeNav !== 'dashboard') return
@@ -488,7 +524,7 @@ export default function AdminDashboard({ onBack }) {
                     <div key={h} style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>{h}</div>
                   ))}
                 </div>
-                {filteredUsers.map((u, i) => <UserRow key={u.id || u._id} user={u} isLast={i === filteredUsers.length - 1} />)}
+                {filteredUsers.map((u, i) => <UserRow key={u.id || u._id} user={u} isLast={i === filteredUsers.length - 1} onEdit={openEditUser} onDelete={deleteUser} />)}
               </div>
             </div>
           )}
@@ -1019,6 +1055,45 @@ export default function AdminDashboard({ onBack }) {
       {/* Modal Rapport */}
       {selectedRapport && <RapportModal rapport={selectedRapport} onClose={() => setSelectedRapport(null)} />}
 
+      {/* Modal Edit Utilisateur */}
+      {editUser && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(11,31,69,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onClick={() => setEditUser(null)}>
+          <div style={{ background: 'white', borderRadius: '20px', padding: '32px', width: '400px', boxShadow: '0 20px 60px rgba(11,31,69,0.2)' }}
+            onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontFamily: '"Sora",sans-serif', fontSize: '18px', fontWeight: '800', color: '#0b1f45', marginBottom: '24px' }}>✏️ Modifier l'utilisateur</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: '700', color: '#6b8cba', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>Nom</label>
+                <input value={editUserNom} onChange={e => setEditUserNom(e.target.value)}
+                  style={{ width: '100%', padding: '10px 14px', border: '1.5px solid rgba(27,111,216,0.2)', borderRadius: '10px', fontSize: '13px', fontFamily: '"DM Sans",sans-serif', outline: 'none', boxSizing: 'border-box' }}
+                  onFocus={e => e.target.style.borderColor = '#1b6fd8'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(27,111,216,0.2)'}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: '700', color: '#6b8cba', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>Email</label>
+                <input value={editUserEmail} onChange={e => setEditUserEmail(e.target.value)}
+                  style={{ width: '100%', padding: '10px 14px', border: '1.5px solid rgba(27,111,216,0.2)', borderRadius: '10px', fontSize: '13px', fontFamily: '"DM Sans",sans-serif', outline: 'none', boxSizing: 'border-box' }}
+                  onFocus={e => e.target.style.borderColor = '#1b6fd8'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(27,111,216,0.2)'}
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                <button onClick={saveEditUser}
+                  style={{ flex: 1, padding: '11px', background: '#1b6fd8', border: 'none', borderRadius: '10px', color: 'white', fontSize: '13px', fontWeight: '700', cursor: 'pointer' }}>
+                  ✅ Sauvegarder
+                </button>
+                <button onClick={() => setEditUser(null)}
+                  style={{ padding: '11px 20px', background: '#f0f6ff', border: 'none', borderRadius: '10px', color: '#6b8cba', fontSize: '13px', cursor: 'pointer' }}>
+                  Annuler
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
@@ -1064,7 +1139,7 @@ function StatutBadge({ statut }) {
   return <span style={{ padding: '3px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: '700', background: c.bg, color: c.text, border: `1px solid ${c.border}`, whiteSpace: 'nowrap' }}>{statut}</span>
 }
 
-function UserRow({ user, isLast }) {
+function UserRow({ user, isLast, onEdit, onDelete }) {
   const [hovered, setHovered] = useState(false)
   return (
     <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
@@ -1076,8 +1151,12 @@ function UserRow({ user, isLast }) {
       <span style={{ fontSize: '13px', color: '#6b8cba' }}>{user.email}</span>
       <span style={{ fontSize: '13px', color: '#0b1f45', fontWeight: '600' }}>{user.entreprise || '—'}</span>
       <div style={{ display: 'flex', gap: '6px' }}>
-        <button style={{ padding: '6px 12px', background: '#e8f2ff', color: '#1b6fd8', border: 'none', borderRadius: '7px', fontSize: '12px', cursor: 'pointer' }}>✏️</button>
-        <button style={{ padding: '6px 12px', background: '#fff0f0', color: '#ef4444', border: 'none', borderRadius: '7px', fontSize: '12px', cursor: 'pointer' }}>🗑️</button>
+        <button onClick={() => onEdit(user)} style={{ padding: '6px 12px', background: '#e8f2ff', color: '#1b6fd8', border: 'none', borderRadius: '7px', fontSize: '12px', cursor: 'pointer' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#1b6fd8'; e.currentTarget.style.color = 'white' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#e8f2ff'; e.currentTarget.style.color = '#1b6fd8' }}>✏️</button>
+        <button onClick={() => onDelete(user._id || user.id)} style={{ padding: '6px 12px', background: '#fff0f0', color: '#ef4444', border: 'none', borderRadius: '7px', fontSize: '12px', cursor: 'pointer' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = 'white' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#fff0f0'; e.currentTarget.style.color = '#ef4444' }}>🗑️</button>
       </div>
     </div>
   )
