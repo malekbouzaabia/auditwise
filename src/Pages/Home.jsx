@@ -1,7 +1,7 @@
 import Navbar from '../components/Navbar.jsx'
 import SecurityCard from '../components/SecurityCard.jsx'
 
-export default function Home({ onSignUp, onSignIn, onAbout, onDashboard, onAdmin, onChatBot, onContact, user, onLogout }) {
+export default function Home({ onSignUp, onSignIn, onAbout, onDashboard, onAdmin, onChatBot, onTutoriel, user, onLogout }) {
   return (
     <>
       <Navbar
@@ -10,7 +10,7 @@ export default function Home({ onSignUp, onSignIn, onAbout, onDashboard, onAdmin
         onAbout={onAbout}
         onDashboard={onDashboard}
         onChatBot={onChatBot}
-        onContact={onContact}
+        onTutoriel={onTutoriel}
         user={user}
         onLogout={onLogout}
       />

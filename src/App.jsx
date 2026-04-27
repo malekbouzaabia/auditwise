@@ -7,6 +7,7 @@ import About          from './Pages/About.jsx'
 import ChatSessions   from './Pages/Chatsessions.jsx'
 import AdminDashboard from './Pages/DashboardAdmin.jsx'
 import ChatBot        from './Pages/chatbot.jsx'
+import Tutoriel       from './Pages/Tutoriel.jsx'
 
 const ROUTES = {
   '':             'home',
@@ -17,6 +18,7 @@ const ROUTES = {
   'chatsessions': 'chat',
   'admin':        'admin',
   'chatbot':      'chatbot',
+  'tutoriel':     'tutoriel',
 }
 
 export default function App() {
@@ -49,6 +51,7 @@ export default function App() {
       chat:    'chatsessions',
       admin:   'admin',
       chatbot: 'chatbot',
+      tutoriel: 'tutoriel',
     }
     window.location.hash = hashMap[p] || ''
     setPage(p)
@@ -69,13 +72,14 @@ export default function App() {
 
   return (
     <>
-      {page === 'home'    && <Home           onSignUp={() => navigate('signup')} onSignIn={() => navigate('signin')} onAbout={() => navigate('about')} onDashboard={() => navigate('chat')} onAdmin={() => navigate('admin')} onChatBot={() => navigate('chatbot')} user={user} onLogout={handleLogout} />}
+      {page === 'home'    && <Home           onSignUp={() => navigate('signup')} onSignIn={() => navigate('signin')} onAbout={() => navigate('about')} onDashboard={() => navigate('chat')} onAdmin={() => navigate('admin')} onChatBot={() => navigate('chatbot')} onTutoriel={() => navigate('tutoriel')} user={user} onLogout={handleLogout} />}
       {page === 'signup'  && <SignUp          onBack={() => navigate('home')} onSignIn={() => navigate('signin')} />}
       {page === 'signin'  && <SignIn          onBack={() => navigate('home')} onSignUp={() => navigate('signup')} onLoginSuccess={handleLoginSuccess} />}
       {page === 'about'   && <About           onBack={() => navigate('home')} onSignUp={() => navigate('signup')} />}
       {page === 'chat'    && <ChatSessions    onBack={() => navigate('home')} />}
       {page === 'admin'   && <AdminDashboard  onBack={() => navigate('home')} />}
-      {page === 'chatbot' && <ChatBot         onBack={() => navigate('home')} user={user} />}
+      {page === 'chatbot'  && <ChatBot         onBack={() => navigate('home')} user={user} />}
+      {page === 'tutoriel' && <Tutoriel        onBack={() => navigate('home')} onSignUp={() => navigate('signup')} />}
     </>
   )
 }
