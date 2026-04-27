@@ -3,7 +3,7 @@ import { useState } from 'react'
 const NAV_ITEMS = [
   { label: 'Accueil',   key: 'home'    },
   { label: 'À propos',  key: 'about'   },
-  { label: 'Contact',   key: 'contact' },
+  { label: 'Tutoriel',  key: 'tutoriel' },
 ]
 
 function getInitials(u) {
@@ -18,7 +18,7 @@ function getName(u) {
   return u?.name || u?.username || u?.email?.split('@')[0] || 'Utilisateur'
 }
 
-export default function Navbar({ onSignUp, onSignIn, onAbout, onDashboard, onChatBot, onContact, user, onLogout }) {
+export default function Navbar({ onSignUp, onSignIn, onAbout, onDashboard, onChatBot, onTutoriel, user, onLogout }) {
   const [active, setActive] = useState('home')
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -26,15 +26,15 @@ export default function Navbar({ onSignUp, onSignIn, onAbout, onDashboard, onCha
     setActive(key)
     if (key === 'about')   onAbout?.()
     if (key === 'chat')    onDashboard?.()
-    if (key === 'contact') onContact?.()
+    if (key === 'tutoriel') onTutoriel?.()
   }
 
   return (
     <nav className="navbar">
       <div className="nav-logo">
-        <div className="nav-logo-badge">🤖</div>
+        <div className="nav-logo-badge">🛡️</div>
         <span>AuditWise</span>
-        <span className="nav-logo-sub">by Draxlmaier</span>
+        <span className="nav-logo-sub">by DESAXMAKER</span>
       </div>
 
       <ul className="nav-links">
