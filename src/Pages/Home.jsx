@@ -30,7 +30,7 @@ export default function Home({ onSignUp, onSignIn, onAbout, onDashboard, onAdmin
         {/* ══ TITRE ══ */}
         <section style={{ position: 'relative', zIndex: 1, width: '100%', textAlign: 'center', padding: '64px 24px 44px' }}>
 
-          <div className="hero-badge">📊plateforme d'audit de conformité ISO 27001</div>
+          <div className="hero-badge">🛡️ Plateforme de sécurité IA</div>
 
           <h1 className="hero-title">
             Atteignez la conformité <span>ISO 27001</span> en toute confiance
@@ -80,6 +80,37 @@ export default function Home({ onSignUp, onSignIn, onAbout, onDashboard, onAdmin
               </span>
             </div>
           )}
+        </section>
+
+        {/* ══ QR CODE PWA ══ */}
+        <section style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1100px', padding: '0 40px 24px', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ background: 'white', borderRadius: '20px', padding: '28px 40px', border: '1px solid rgba(27,111,216,0.12)', boxShadow: '0 8px 32px rgba(11,31,69,0.08)', display: 'flex', alignItems: 'center', gap: '28px', maxWidth: '560px', width: '100%' }}>
+            {/* QR Code via API publique */}
+            <div style={{ flexShrink: 0, background: 'white', padding: '8px', borderRadius: '12px', border: '2px solid #1b6fd8', boxShadow: '0 4px 16px rgba(27,111,216,0.15)' }}>
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(window.location.origin)}&color=0b1f45&bgcolor=ffffff`}
+                alt="QR Code AuditWise"
+                width={120}
+                height={120}
+                style={{ borderRadius: '8px', display: 'block' }}
+              />
+            </div>
+            {/* Texte */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <span style={{ fontSize: '20px' }}>📱</span>
+                <span style={{ fontFamily: '"Sora", sans-serif', fontSize: '16px', fontWeight: '800', color: '#0b1f45' }}>Accès Mobile</span>
+              </div>
+              <p style={{ fontSize: '13px', color: '#6b8cba', lineHeight: '1.6', margin: '0 0 12px' }}>
+                Scannez ce QR code avec votre téléphone pour accéder à AuditWise et installer l'application.
+              </p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <span style={{ padding: '4px 10px', background: '#e8f2ff', borderRadius: '20px', fontSize: '11px', fontWeight: '700', color: '#1b6fd8' }}>📲 iOS Safari</span>
+                <span style={{ padding: '4px 10px', background: '#e8f2ff', borderRadius: '20px', fontSize: '11px', fontWeight: '700', color: '#1b6fd8' }}>🤖 Android Chrome</span>
+                <span style={{ padding: '4px 10px', background: '#f0fff4', borderRadius: '20px', fontSize: '11px', fontWeight: '700', color: '#16a34a' }}>✅ PWA</span>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* ══ CARD ══ */}
