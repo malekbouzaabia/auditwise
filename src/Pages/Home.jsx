@@ -82,8 +82,8 @@ export default function Home({ onSignUp, onSignIn, onAbout, onDashboard, onAdmin
           )}
         </section>
 
-        {/* ══ QR CODE PWA ══ */}
-        <section style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1100px', padding: '0 40px 24px', display: 'flex', justifyContent: 'center' }}>
+        {/* ══ QR CODE PWA — seulement sur PC ══ */}
+        <section style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1100px', padding: '0 40px 24px', display: window.innerWidth < 768 ? 'none' : 'flex', justifyContent: 'center' }}>
           <div style={{ background: 'white', borderRadius: '20px', padding: '28px 40px', border: '1px solid rgba(27,111,216,0.12)', boxShadow: '0 8px 32px rgba(11,31,69,0.08)', display: 'flex', alignItems: 'center', gap: '28px', maxWidth: '560px', width: '100%' }}>
             {/* QR Code via API publique */}
             <div style={{ flexShrink: 0, background: 'white', padding: '8px', borderRadius: '12px', border: '2px solid #1b6fd8', boxShadow: '0 4px 16px rgba(27,111,216,0.15)' }}>
