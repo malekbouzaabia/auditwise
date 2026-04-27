@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react'
 
-const DOMAINS = [
-  { label: 'Gouvernance',       pct: 87, color: '#22c55e' },
-  { label: 'Controle acces',    pct: 72, color: '#1b6fd8' },
-  { label: 'Cryptographie',     pct: 65, color: '#f59e0b' },
-  { label: 'Securite physique', pct: 91, color: '#22c55e' },
-  { label: 'Gestion incidents', pct: 54, color: '#ef4444' },
+const DOMAINS_ISO = [
+  { label: 'Gouvernance',        clause: '5.2',  icon: '🏛️' },
+  { label: 'Ressources Humaines', clause: '6.3',  icon: '👥' },
+  { label: 'Gestion des Actifs',  clause: '5.9',  icon: '📦' },
+  { label: 'Controle Acces',      clause: '5.15', icon: '🔐' },
+  { label: 'Cryptographie',       clause: '8.24', icon: '🔒' },
+  { label: 'Securite Physique',   clause: '7.1',  icon: '🏢' },
+  { label: 'Securite Operationnelle', clause: '8.8', icon: '⚙️' },
+  { label: 'Reseau',              clause: '8.20', icon: '🌐' },
+  { label: 'Developpement',       clause: '8.25', icon: '💻' },
+  { label: 'Fournisseurs',        clause: '5.19', icon: '🤝' },
+  { label: 'Gestion Incidents',   clause: '5.24', icon: '🚨' },
+  { label: 'Continuite',          clause: '5.30', icon: '♻️' },
+  { label: 'Conformite',          clause: '5.36', icon: '✅' },
 ]
 
 const STEPS = [
@@ -14,29 +22,12 @@ const STEPS = [
   { icon: '📄', label: 'Recevez votre rapport',   desc: 'PDF detaille avec recommandations RAG' },
 ]
 
-const STATS = [
-  { icon: '📋', label: 'Questions',  value: '106',  color: '#1b6fd8' },
-  { icon: '🏛️', label: 'Domaines',   value: '13',   color: '#8b5cf6' },
-  { icon: '🤖', label: 'IA Powered', value: 'Groq', color: '#22c55e' },
-  { icon: '📄', label: 'Rapport PDF', value: 'Auto', color: '#f59e0b' },
-]
-
 export default function SecurityCard() {
   const [activeStep, setActiveStep] = useState(0)
-  const [animPct, setAnimPct] = useState(0)
+  const [activeDomain, setActiveDomain] = useState(null)
 
   useEffect(() => {
     const t = setInterval(() => setActiveStep(s => (s + 1) % 3), 2500)
-    return () => clearInterval(t)
-  }, [])
-
-  useEffect(() => {
-    let v = 0
-    const t = setInterval(() => {
-      v += 2
-      setAnimPct(Math.min(v, 78))
-      if (v >= 78) clearInterval(t)
-    }, 20)
     return () => clearInterval(t)
   }, [])
 
@@ -44,36 +35,52 @@ export default function SecurityCard() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
 
-        {/* Scores par domaine */}
+        {/* 13 Domaines ISO 27001 */}
         <div style={{ background: 'white', borderRadius: '24px', padding: '28px', border: '1px solid rgba(27,111,216,0.1)', boxShadow: '0 8px 32px rgba(11,31,69,0.08)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <div>
-              <div style={{ fontFamily: '"Sora", sans-serif', fontSize: '15px', fontWeight: '800', color: '#0b1f45' }}>Score de conformite</div>
-              <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>Simulation ISO 27001:2022</div>
+          <div style={{ marginBottom: '20px' }}>
+            <div style={{ fontFamily: '"Sora", sans-serif', fontSize: '15px', fontWeight: '800', color: '#0b1f45' }}>
+              13 Domaines ISO 27001:2022
             </div>
-            <div style={{ width: '56px', height: '56px', position: 'relative' }}>
-              <svg viewBox="0 0 56 56" style={{ transform: 'rotate(-90deg)' }}>
-                <circle cx="28" cy="28" r="22" fill="none" stroke="#f0f6ff" strokeWidth="6" />
-                <circle cx="28" cy="28" r="22" fill="none" stroke="#1b6fd8" strokeWidth="6"
-                  strokeDasharray={`${animPct * 1.38} 138`} strokeLinecap="round" style={{ transition: 'stroke-dasharray 0.3s' }} />
-              </svg>
-              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: '"Sora", sans-serif', fontSize: '13px', fontWeight: '800', color: '#1b6fd8' }}>
-                {animPct}%
-              </div>
+            <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
+              Survolez un domaine pour en savoir plus
             </div>
           </div>
 
-          {DOMAINS.map((d, i) => (
-            <div key={i} style={{ marginBottom: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span style={{ fontSize: '12px', color: '#0b1f45', fontWeight: '600' }}>{d.label}</span>
-                <span style={{ fontSize: '12px', fontWeight: '800', color: d.color }}>{d.pct}%</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '16px' }}>
+            {DOMAINS_ISO.map((d, i) => (
+              <div key={i}
+                onMouseEnter={() => setActiveDomain(i)}
+                onMouseLeave={() => setActiveDomain(null)}
+                style={{
+                  background: activeDomain === i ? 'linear-gradient(135deg, #1b6fd8, #3b9eff)' : '#f8faff',
+                  borderRadius: '12px', padding: '10px 8px', textAlign: 'center',
+                  border: `1px solid ${activeDomain === i ? '#1b6fd8' : 'rgba(27,111,216,0.08)'}`,
+                  cursor: 'pointer', transition: 'all 0.2s',
+                  transform: activeDomain === i ? 'scale(1.05)' : 'scale(1)'
+                }}>
+                <div style={{ fontSize: '20px', marginBottom: '4px' }}>{d.icon}</div>
+                <div style={{ fontSize: '9px', fontWeight: '700', color: activeDomain === i ? 'white' : '#0b1f45', lineHeight: '1.3' }}>{d.label}</div>
+                <div style={{ fontSize: '8px', color: activeDomain === i ? 'rgba(255,255,255,0.7)' : '#94a3b8', marginTop: '2px' }}>Cl. {d.clause}</div>
               </div>
-              <div style={{ height: '6px', background: '#f0f6ff', borderRadius: '100px', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: d.pct + '%', background: d.color, borderRadius: '100px', transition: 'width 1s ease' }} />
+            ))}
+          </div>
+
+          {/* Info domaine survolé */}
+          <div style={{ background: activeDomain !== null ? '#eff6ff' : '#f8faff', borderRadius: '12px', padding: '12px 16px', border: '1px solid rgba(27,111,216,0.1)', minHeight: '48px', transition: 'all 0.3s', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {activeDomain !== null ? (
+              <>
+                <span style={{ fontSize: '22px' }}>{DOMAINS_ISO[activeDomain].icon}</span>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#0b1f45' }}>{DOMAINS_ISO[activeDomain].label}</div>
+                  <div style={{ fontSize: '11px', color: '#1b6fd8', fontWeight: '600' }}>Clause {DOMAINS_ISO[activeDomain].clause} — ISO 27001:2022</div>
+                </div>
+              </>
+            ) : (
+              <div style={{ fontSize: '12px', color: '#94a3b8', fontStyle: 'italic' }}>
+                Survolez un domaine pour voir les details...
               </div>
-            </div>
-          ))}
+            )}
+          </div>
         </div>
 
         {/* Comment ca marche */}
@@ -109,7 +116,7 @@ export default function SecurityCard() {
             </div>
           </div>
         </div>
-    </div>
+      </div>
     </div>
   )
 }
