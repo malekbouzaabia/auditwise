@@ -1,259 +1,209 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-const CARDS_TOP = [
-  {
-    icon: '🎯',
-    title: 'Notre Mission',
-    text: "Nous nous engageons à simplifier le monde complexe de la conformité en matière de sécurité de l'information. Notre application web pilotée par l'IA est conçue pour permettre aux organisations de toutes tailles d'atteindre et de maintenir la conformité aux normes ISO 27001. En intégrant une technologie IA avancée, nous rendons la conformité accessible, compréhensible et gérable.",
-  },
-  {
-    icon: '👥',
-    title: 'Qui Sommes-Nous',
-    text: "Fondée par une équipe passionnée de professionnels de la cybersécurité et d'experts en IA, IFSentry a toujours été à l'avant-garde des solutions innovantes pour la sécurité de l'information. Avec des décennies d'expérience combinée en cybersécurité, conformité et technologie IA, nous apportons un mélange unique d'expertise.",
-  },
-  {
-    icon: '💻',
-    title: 'Notre Technologie',
-    text: "Notre plateforme exploite la puissance de l'intelligence artificielle pour automatiser l'évaluation de la conformité ISO 27001. En intégrant des algorithmes d'apprentissage automatique de pointe et le traitement du langage naturel, notre application s'adapte aux besoins spécifiques de chaque utilisateur et s'améliore continuellement.",
-  },
+const TEAM = [
+  { nom: 'Malek Bouzaabia',   role: 'Développeur Full Stack',  emoji: '👨‍💻', color: '#1b6fd8' },
+  { nom: 'Encadreur PFE',     role: 'Encadreur Académique',    emoji: '🎓', color: '#8b5cf6' },
+  { nom: 'Draexlmaier Group', role: 'Partenaire Industriel',   emoji: '🏭', color: '#22c55e' },
 ]
 
-const CARDS_BOTTOM = [
-  {
-    icon: '🔒',
-    title: 'Notre Engagement Sécurité',
-    text: "La sécurité est au cœur de tout ce que nous faisons. Nous veillons à ce que notre application vous aide non seulement à respecter la norme ISO 27001, mais adhère également aux normes les plus élevées de protection des données. Nous employons des mesures de sécurité rigoureuses, notamment le chiffrement de bout en bout et des audits réguliers.",
-  },
-  {
-    icon: '📬',
-    title: 'Nous Contacter',
-    text: "Vous souhaitez en savoir plus sur la façon dont notre application peut aider votre organisation ? Notre équipe dédiée est prête à répondre à toutes vos questions et à vous accompagner sur la voie d'une conformité simplifiée. Contactez-nous dès aujourd'hui pour planifier une démonstration ou parler à l'un de nos experts.",
-  },
+const FEATURES = [
+  { icon: '🤖', title: 'IA Générative',       desc: 'Propulsé par Groq LLaMA 3.3 — analyse intelligente de vos réponses en temps réel.',           color: '#1b6fd8' },
+  { icon: '📋', title: 'ISO 27001:2022',       desc: '106 questions couvrant les 13 domaines de la norme ISO 27001:2022 intégralement.',             color: '#8b5cf6' },
+  { icon: '📄', title: 'Rapports PDF',         desc: 'Génération automatique de rapports professionnels avec recommandations RAG personnalisées.',    color: '#f59e0b' },
+  { icon: '🎯', title: 'Campagnes d\'Audit',   desc: 'Système de campagnes avec suivi des participants et statistiques par domaine.',                 color: '#22c55e' },
+  { icon: '🔐', title: 'Sécurité MFA',         desc: 'Authentification multi-facteurs et accès restreint aux emails autorisés.',                     color: '#ef4444' },
+  { icon: '📊', title: 'Dashboard Admin',      desc: 'Tableau de bord complet pour suivre les audits, sessions et statistiques en temps réel.',       color: '#06b6d4' },
 ]
 
-const STATS = [
-  { num: '500+', label: 'Entreprises clientes'  },
-  { num: '99%',  label: 'Taux de conformité'    },
-  { num: '15+',  label: "Années d'expérience"   },
-  { num: '24/7', label: 'Support disponible'    },
+const STACK = [
+  { name: 'React',      icon: '⚛️',  cat: 'Frontend'  },
+  { name: 'Node.js',    icon: '🟢',  cat: 'Backend'   },
+  { name: 'MongoDB',    icon: '🍃',  cat: 'Base de données' },
+  { name: 'Groq AI',    icon: '🤖',  cat: 'IA'        },
+  { name: 'PDFKit',     icon: '📄',  cat: 'PDF'       },
+  { name: 'JWT + MFA',  icon: '🔐',  cat: 'Sécurité'  },
+  { name: 'Render',     icon: '☁️',  cat: 'Cloud'     },
+  { name: 'RAG',        icon: '📚',  cat: 'IA'        },
 ]
 
-function Card({ card }) {
-  const [hovered, setHovered] = useState(false)
+export default function About({ onBack, onSignUp }) {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    setTimeout(() => setVisible(true), 100)
+  }, [])
+
   return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        background: 'white', borderRadius: '20px', padding: '36px 32px',
-        border: `1px solid ${hovered ? 'rgba(27,111,216,0.3)' : 'rgba(27,111,216,0.1)'}`,
-        boxShadow: hovered
-          ? '0 20px 60px rgba(10,22,40,0.14), 0 4px 20px rgba(27,111,216,0.12)'
-          : '0 4px 24px rgba(10,22,40,0.07)',
-        transition: 'all 0.3s',
-        transform: hovered ? 'translateY(-6px)' : 'translateY(0)',
-        display: 'flex', flexDirection: 'column',
-        position: 'relative', overflow: 'hidden', cursor: 'default',
-      }}
-    >
-      <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
-        background: hovered ? 'linear-gradient(90deg, #1b6fd8, #3b9eff)' : 'transparent',
-        transition: 'all 0.3s',
-      }} />
-      <div style={{
-        width: '54px', height: '54px', borderRadius: '14px',
-        background: hovered ? 'linear-gradient(135deg, #1b6fd8, #3b9eff)' : '#e8f2ff',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: '26px', marginBottom: '20px', transition: 'all 0.3s',
-        boxShadow: hovered ? '0 8px 20px rgba(27,111,216,0.35)' : 'none',
-      }}>
-        {card.icon}
+    <div style={{ minHeight: '100vh', background: '#f0f6ff', fontFamily: '"DM Sans", sans-serif', overflow: 'hidden' }}>
+
+      {/* ── HERO ── */}
+      <div style={{ background: 'linear-gradient(135deg, #0b1f45 0%, #1040a0 50%, #1b6fd8 100%)', padding: '80px 40px 100px', position: 'relative', overflow: 'hidden' }}>
+        {/* Cercles décoratifs */}
+        <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: '400px', height: '400px', borderRadius: '50%', background: 'rgba(59,158,255,0.08)', border: '1px solid rgba(59,158,255,0.1)' }} />
+        <div style={{ position: 'absolute', bottom: '-60px', left: '-60px', width: '300px', height: '300px', borderRadius: '50%', background: 'rgba(59,158,255,0.05)', border: '1px solid rgba(59,158,255,0.08)' }} />
+
+        <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <button onClick={onBack} style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '10px', color: 'white', padding: '8px 16px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', marginBottom: '40px', fontFamily: '"DM Sans", sans-serif' }}>
+            ← Retour
+          </button>
+
+          {/* Badge */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(27,111,216,0.3)', border: '1px solid rgba(59,158,255,0.4)', borderRadius: '100px', padding: '6px 16px', marginBottom: '24px' }}>
+            <span style={{ fontSize: '12px' }}>🎓</span>
+            <span style={{ fontSize: '12px', fontWeight: '700', color: '#7ab3f0', letterSpacing: '0.5px' }}>PROJET PFE — DRAEXLMAIER GROUP</span>
+          </div>
+
+          <h1 style={{ fontFamily: '"Sora", sans-serif', fontSize: '52px', fontWeight: '800', color: 'white', lineHeight: '1.1', marginBottom: '20px', letterSpacing: '-1px' }}>
+            À propos de<br />
+            <span style={{ background: 'linear-gradient(90deg, #3b9eff, #7ab3f0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>AuditWise AI</span>
+          </h1>
+
+          <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.65)', lineHeight: '1.7', maxWidth: '600px', marginBottom: '40px' }}>
+            Plateforme d'auto-évaluation ISO 27001:2022 propulsée par l'intelligence artificielle — développée dans le cadre d'un projet de fin d'études.
+          </p>
+
+          {/* Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', maxWidth: '700px' }}>
+            {[
+              { num: '106', label: 'Questions' },
+              { num: '13',  label: 'Domaines' },
+              { num: 'AI',  label: 'Propulsé' },
+              { num: 'ISO', label: '27001:2022' },
+            ].map((s, i) => (
+              <div key={i} style={{ textAlign: 'center', padding: '16px', background: 'rgba(255,255,255,0.06)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ fontFamily: '"Sora", sans-serif', fontSize: '28px', fontWeight: '800', color: '#3b9eff' }}>{s.num}</div>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', fontWeight: '600', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-      <h3 style={{
-        fontFamily: 'Sora, sans-serif', fontSize: '18px', fontWeight: '800',
-        color: '#0b1f45', letterSpacing: '-0.4px', marginBottom: '14px',
-      }}>
-        {card.title}
-      </h3>
-      <p style={{ fontSize: '14px', color: '#6b8cba', lineHeight: '1.85' }}>
-        {card.text}
-      </p>
+
+      {/* ── CONTENU ── */}
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '60px 40px' }}>
+
+        {/* ISO 27001 Definition */}
+        <div style={{ background: 'linear-gradient(135deg, #0b1f45, #1040a0)', borderRadius: '24px', padding: '40px', marginBottom: '32px', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(59,158,255,0.06)', border: '1px solid rgba(59,158,255,0.1)' }} />
+          <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+            <div style={{ width: '56px', height: '56px', background: 'rgba(27,111,216,0.4)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', flexShrink: 0, border: '1px solid rgba(59,158,255,0.3)' }}>📋</div>
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(59,158,255,0.15)', border: '1px solid rgba(59,158,255,0.3)', borderRadius: '100px', padding: '4px 12px', marginBottom: '12px' }}>
+                <span style={{ fontSize: '10px', fontWeight: '700', color: '#7ab3f0', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Norme internationale</span>
+              </div>
+              <h2 style={{ fontFamily: '"Sora", sans-serif', fontSize: '22px', fontWeight: '800', color: 'white', marginBottom: '16px' }}>
+                Qu'est-ce que la norme ISO 27001:2022 ?
+              </h2>
+              <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.75)', lineHeight: '1.8', marginBottom: '20px' }}>
+                <strong style={{ color: '#3b9eff' }}>ISO/IEC 27001:2022</strong> est une norme internationale publiée par l'Organisation internationale de normalisation (ISO) qui spécifie les exigences pour établir, mettre en œuvre, maintenir et améliorer continuellement un <strong style={{ color: '#7ab3f0' }}>Système de Management de la Sécurité de l'Information (SMSI)</strong>.
+              </p>
+              <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.65)', lineHeight: '1.8', marginBottom: '24px' }}>
+                Elle aide les organisations à gérer la sécurité de leurs actifs informationnels — données financières, propriété intellectuelle, données des employés, ou informations confiées par des tiers — en appliquant un processus de gestion des risques.
+              </p>
+              {/* Piliers */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                {[
+                  { icon: '🔒', title: 'Confidentialité',  desc: 'Protéger les données contre les accès non autorisés' },
+                  { icon: '✅', title: 'Intégrité',         desc: 'Garantir lexactitude et la fiabilité des données' },
+                  { icon: '📡', title: 'Disponibilité',     desc: 'Assurer laccès aux données quand nécessaire' },
+                ].map((p, i) => (
+                  <div key={i} style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '14px', padding: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ fontSize: '22px', marginBottom: '8px' }}>{p.icon}</div>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>{p.title}</div>
+                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', lineHeight: '1.5' }}>{p.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mission */}
+        <div style={{ background: 'white', borderRadius: '24px', padding: '40px', marginBottom: '32px', border: '1px solid rgba(27,111,216,0.08)', boxShadow: '0 8px 32px rgba(11,31,69,0.06)' }}>
+          <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
+            <div style={{ width: '56px', height: '56px', background: 'linear-gradient(135deg, #1b6fd8, #3b9eff)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', flexShrink: 0 }}>🎯</div>
+            <div>
+              <h2 style={{ fontFamily: '"Sora", sans-serif', fontSize: '22px', fontWeight: '800', color: '#0b1f45', marginBottom: '12px' }}>Notre Mission</h2>
+              <p style={{ fontSize: '15px', color: '#6b8cba', lineHeight: '1.8' }}>
+                AuditWise AI simplifie le processus d'auto-évaluation ISO 27001:2022 grâce à l'intelligence artificielle.
+                Notre objectif est de permettre aux organisations — notamment <strong style={{ color: '#0b1f45' }}>Draexlmaier Group</strong> — d'évaluer
+                leur conformité en sécurité de l'information de manière rapide, précise et automatisée.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Fonctionnalités */}
+        <h2 style={{ fontFamily: '"Sora", sans-serif', fontSize: '22px', fontWeight: '800', color: '#0b1f45', marginBottom: '20px' }}>
+          ✨ Fonctionnalités clés
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '40px' }}>
+          {FEATURES.map((f, i) => (
+            <FeatureCard key={i} feature={f} />
+          ))}
+        </div>
+
+        {/* Stack technique */}
+        <div style={{ background: 'linear-gradient(135deg, #0b1f45, #1040a0)', borderRadius: '24px', padding: '40px', marginBottom: '32px' }}>
+          <h2 style={{ fontFamily: '"Sora", sans-serif', fontSize: '22px', fontWeight: '800', color: 'white', marginBottom: '24px' }}>
+            🛠️ Stack Technique
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+            {STACK.map((s, i) => (
+              <div key={i} style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '14px', padding: '16px', border: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
+                <div style={{ fontSize: '24px', marginBottom: '8px' }}>{s.icon}</div>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: 'white' }}>{s.name}</div>
+                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginTop: '3px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.cat}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Équipe */}
+        <h2 style={{ fontFamily: '"Sora", sans-serif', fontSize: '22px', fontWeight: '800', color: '#0b1f45', marginBottom: '20px' }}>
+          👥 Équipe Projet
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '40px' }}>
+          {TEAM.map((t, i) => (
+            <div key={i} style={{ background: 'white', borderRadius: '18px', padding: '28px 24px', border: '1px solid rgba(27,111,216,0.08)', boxShadow: '0 4px 16px rgba(11,31,69,0.06)', textAlign: 'center' }}>
+              <div style={{ width: '60px', height: '60px', background: `${t.color}20`, borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', margin: '0 auto 16px' }}>{t.emoji}</div>
+              <div style={{ fontFamily: '"Sora", sans-serif', fontSize: '14px', fontWeight: '800', color: '#0b1f45', marginBottom: '4px' }}>{t.nom}</div>
+              <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600' }}>{t.role}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div style={{ background: 'linear-gradient(135deg, #1b6fd8, #1551a8)', borderRadius: '24px', padding: '48px 40px', textAlign: 'center' }}>
+          <div style={{ fontSize: '40px', marginBottom: '16px' }}>🚀</div>
+          <h2 style={{ fontFamily: '"Sora", sans-serif', fontSize: '26px', fontWeight: '800', color: 'white', marginBottom: '12px' }}>
+            Prêt à auditer votre organisation ?
+          </h2>
+          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.7)', marginBottom: '28px' }}>
+            Commencez votre auto-évaluation ISO 27001:2022 gratuitement dès aujourd'hui.
+          </p>
+          <button onClick={onSignUp}
+            style={{ padding: '14px 36px', background: 'white', color: '#1b6fd8', border: 'none', borderRadius: '12px', fontFamily: '"Sora", sans-serif', fontSize: '15px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }}>
+            Créer mon compte →
+          </button>
+        </div>
+      </div>
+
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+      `}</style>
     </div>
   )
 }
 
-export default function About({ onBack, onSignUp }) {
+function FeatureCard({ feature }) {
+  const [hovered, setHovered] = useState(false)
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f6ff', fontFamily: 'DM Sans, sans-serif' }}>
-
-      {/* ══ BANNIÈRE HERO ══ */}
-      <div style={{
-        background: 'linear-gradient(135deg, #0b1f45 0%, #1040a0 55%, #1b6fd8 100%)',
-        padding: '60px 60px 110px', position: 'relative', overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-        }} />
-        <div style={{
-          position: 'absolute', top: '-120px', right: '-120px',
-          width: '550px', height: '550px', borderRadius: '50%', pointerEvents: 'none',
-          background: 'radial-gradient(circle, rgba(59,158,255,0.15) 0%, transparent 70%)',
-        }} />
-
-        {/* Bouton retour */}
-        <button onClick={onBack} style={{
-          display: 'inline-flex', alignItems: 'center', gap: '8px',
-          background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
-          borderRadius: '8px', color: 'white', fontSize: '13px', fontWeight: '600',
-          padding: '8px 16px', cursor: 'pointer', marginBottom: '44px',
-          fontFamily: 'DM Sans, sans-serif', transition: 'all 0.2s', position: 'relative', zIndex: 2,
-        }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-        >
-          ← Retour à l'accueil
-        </button>
-
-        {/* Badge */}
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: '8px',
-          background: 'rgba(59,158,255,0.2)', border: '1px solid rgba(59,158,255,0.4)',
-          borderRadius: '100px', padding: '5px 16px', fontSize: '12px', fontWeight: '700',
-          color: '#3b9eff', letterSpacing: '0.8px', textTransform: 'uppercase',
-          marginBottom: '18px', position: 'relative', zIndex: 2,
-        }}>
-          🤖 plateforme d'audit de conformité ISO 27001 
-        </div>
-
-        {/* Titre */}
-        <h1 style={{
-          fontFamily: 'Sora, sans-serif',
-          fontSize: 'clamp(36px, 4.5vw, 56px)',
-          fontWeight: '800', color: 'white',
-          letterSpacing: '-2px', lineHeight: '1.1',
-          marginBottom: '16px', position: 'relative', zIndex: 2,
-        }}>
-          À propos de <span style={{ color: '#3b9eff' }}>nous</span>
-        </h1>
-        <p style={{
-          fontSize: '16px', color: 'rgba(255,255,255,0.7)',
-          maxWidth: '480px', lineHeight: '1.75', position: 'relative', zIndex: 2,
-        }}>
-          Découvrez qui nous sommes, notre mission et la technologie qui propulse AuditWise vers l'excellence.
-        </p>
-
-        {/* Stats */}
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(4, auto)',
-          gap: '16px', marginTop: '52px', width: 'fit-content',
-          position: 'relative', zIndex: 2,
-        }}>
-          {STATS.map(s => (
-            <div key={s.label} style={{
-              background: 'rgba(255,255,255,0.08)',
-              border: '1px solid rgba(255,255,255,0.15)',
-              borderRadius: '14px', padding: '16px 24px', textAlign: 'center', minWidth: '130px',
-            }}>
-              <div style={{
-                fontFamily: 'Sora, sans-serif', fontSize: '26px', fontWeight: '800',
-                color: 'white', letterSpacing: '-1px', lineHeight: '1',
-              }}>{s.num}</div>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginTop: '5px', fontWeight: '500' }}>
-                {s.label}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Vague */}
-      <div style={{ marginTop: '-2px', lineHeight: 0, background: '#f0f6ff' }}>
-        <svg viewBox="0 0 1440 70" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', display: 'block' }}>
-          <path d="M0 0 C480 70 960 70 1440 0 L1440 70 L0 70 Z" fill="#f0f6ff"/>
-        </svg>
-      </div>
-
-      {/* ══ CARTES ══ */}
-      <div style={{ padding: '0 60px 60px', maxWidth: '1300px', margin: '0 auto' }}>
-
-        {/* Titre section */}
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-          <h2 style={{
-            fontFamily: 'Sora, sans-serif', fontSize: '32px', fontWeight: '800',
-            color: '#0b1f45', letterSpacing: '-1px', marginBottom: '10px',
-          }}>
-            Ce qui nous <span style={{ color: '#1b6fd8' }}>définit</span>
-          </h2>
-          <p style={{ fontSize: '15px', color: '#6b8cba', maxWidth: '480px', margin: '0 auto', lineHeight: '1.7' }}>
-            Notre vision, notre équipe et la technologie au service de votre conformité.
-          </p>
-        </div>
-
-        {/* 3 cartes */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '24px' }}>
-          {CARDS_TOP.map(card => <Card key={card.title} card={card} />)}
-        </div>
-
-        {/* 2 cartes */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-          {CARDS_BOTTOM.map(card => <Card key={card.title} card={card} />)}
-        </div>
-      </div>
-
-      {/* ══ BANNIÈRE CTA ══ */}
-      <div style={{
-        margin: '0 60px 80px',
-        background: 'linear-gradient(135deg, #0b1f45 0%, #1b6fd8 100%)',
-        borderRadius: '24px', padding: '56px 64px',
-        display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between', gap: '40px',
-        position: 'relative', overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute', right: '-80px', top: '-80px',
-          width: '350px', height: '350px', borderRadius: '50%', pointerEvents: 'none',
-          background: 'radial-gradient(circle, rgba(59,158,255,0.2) 0%, transparent 70%)',
-        }} />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <h2 style={{
-            fontFamily: 'Sora, sans-serif', fontSize: '26px', fontWeight: '800',
-            color: 'white', letterSpacing: '-0.8px', marginBottom: '10px',
-          }}>
-            Prêt à sécuriser votre entreprise ?
-          </h2>
-          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.6' }}>
-            Rejoignez des centaines d'entreprises qui font confiance à IFSentry pour leur conformité ISO 27001.
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '14px', flexShrink: 0, position: 'relative', zIndex: 1 }}>
-          <button onClick={onSignUp} style={{
-            padding: '13px 28px', background: 'white', color: '#1b6fd8',
-            border: 'none', borderRadius: '10px', fontFamily: 'Sora, sans-serif',
-            fontSize: '14px', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-          }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-          >
-            Commencer gratuitement →
-          </button>
-          <button style={{
-            padding: '13px 28px', background: 'transparent', color: 'white',
-            border: '1.5px solid rgba(255,255,255,0.35)', borderRadius: '10px',
-            fontFamily: 'Sora, sans-serif', fontSize: '14px', fontWeight: '600',
-            cursor: 'pointer', transition: 'all 0.2s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'white'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)'; e.currentTarget.style.background = 'transparent' }}
-          >
-            Nous contacter
-          </button>
-        </div>
-      </div>
-
+    <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+      style={{ background: 'white', borderRadius: '18px', padding: '24px', border: `1px solid ${hovered ? feature.color + '40' : 'rgba(27,111,216,0.08)'}`, boxShadow: hovered ? `0 12px 32px ${feature.color}20` : '0 4px 16px rgba(11,31,69,0.06)', transition: 'all 0.3s', transform: hovered ? 'translateY(-4px)' : 'translateY(0)' }}>
+      <div style={{ width: '44px', height: '44px', background: feature.color + '15', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', marginBottom: '14px' }}>{feature.icon}</div>
+      <div style={{ fontFamily: '"Sora", sans-serif', fontSize: '14px', fontWeight: '800', color: '#0b1f45', marginBottom: '8px' }}>{feature.title}</div>
+      <div style={{ fontSize: '12px', color: '#6b8cba', lineHeight: '1.6' }}>{feature.desc}</div>
     </div>
   )
 }
