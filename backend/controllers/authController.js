@@ -41,29 +41,30 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt)
     const verifyToken    = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '24h' })
 
-    await User.create({ nom, email, entreprise, password: hashedPassword, isVerified: false, verifyToken })
+    // Générer code MFA pour activation
+    const mfaCode    = Math.floor(100000 + Math.random() * 900000).toString()
+    const mfaExpires = new Date(Date.now() + 10 * 60 * 1000)
 
-    // Email de vérification
-    const verifyUrl = `http://localhost:5000/api/auth/verify/${verifyToken}`
-    await sendEmail(email, '✅ Activez votre compte AuditWise', `
-      <div style="font-family: Arial; max-width: 500px; margin: 0 auto;">
-        <div style="background: linear-gradient(135deg,#0b1f45,#1b6fd8); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+    await User.create({ nom, email, entreprise, password: hashedPassword, isVerified: false, verifyToken, mfaCode, mfaExpires })
+
+    // Envoyer code MFA par email
+    await sendEmail(email, '🔐 Code de vérification AuditWise', `
+      <div style="font-family:Arial; max-width:500px; margin:0 auto;">
+        <div style="background:linear-gradient(135deg,#0b1f45,#1b6fd8); padding:30px; border-radius:12px 12px 0 0; text-align:center;">
           <h1 style="color:white; margin:0;">🛡️ AuditWise</h1>
         </div>
-        <div style="background:white; padding:30px; border:1px solid #e0eaff; border-radius:0 0 12px 12px;">
+        <div style="background:white; padding:30px; border:1px solid #e0eaff; border-radius:0 0 12px 12px; text-align:center;">
           <h2 style="color:#0b1f45;">Bonjour ${nom || email.split('@')[0]},</h2>
-          <p style="color:#6b8cba;">Cliquez pour activer votre compte :</p>
-          <div style="text-align:center; margin:28px 0;">
-            <a href="${verifyUrl}" style="padding:14px 32px; background:#1b6fd8; color:white; text-decoration:none; border-radius:10px; font-weight:700;">
-              ✅ Activer mon compte
-            </a>
+          <p style="color:#6b8cba;">Votre code de vérification pour activer votre compte :</p>
+          <div style="background:#f0f6ff; border-radius:14px; padding:24px; margin:20px 0; border:2px solid #1b6fd8;">
+            <span style="font-size:44px; font-weight:800; color:#1b6fd8; letter-spacing:10px;">${mfaCode}</span>
           </div>
-          <p style="color:#94a3b8; font-size:12px; text-align:center;">Ce lien expire dans 24h.</p>
+          <p style="color:#94a3b8; font-size:12px;">⏱️ Expire dans 10 minutes. Ne le partagez pas.</p>
         </div>
       </div>
     `)
 
-    res.status(201).json({ message: 'Compte créé ! Vérifiez votre email @drax.com pour activer votre compte.' })
+    res.status(201).json({ message: 'Compte créé ! Entrez le code envoyé par email pour activer votre compte.', requireCode: true, email })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -117,31 +118,13 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) return res.status(400).json({ message: 'Email ou mot de passe incorrect' })
 
-    // Générer code MFA
-    const mfaCode    = Math.floor(100000 + Math.random() * 900000).toString()
-    const mfaExpires = new Date(Date.now() + 10 * 60 * 1000)
-    user.mfaCode    = mfaCode
-    user.mfaExpires = mfaExpires
-    await user.save()
-
-    // Envoyer code MFA
-    await sendEmail(email, '🔐 Code MFA AuditWise', `
-      <div style="font-family:Arial; max-width:500px; margin:0 auto;">
-        <div style="background:linear-gradient(135deg,#0b1f45,#1b6fd8); padding:30px; border-radius:12px 12px 0 0; text-align:center;">
-          <h1 style="color:white; margin:0;">🛡️ AuditWise</h1>
-        </div>
-        <div style="background:white; padding:30px; border:1px solid #e0eaff; border-radius:0 0 12px 12px; text-align:center;">
-          <h2 style="color:#0b1f45;">Code de vérification</h2>
-          <p style="color:#6b8cba;">Entrez ce code dans AuditWise :</p>
-          <div style="background:#f0f6ff; border-radius:14px; padding:24px; margin:20px 0; border:2px solid #1b6fd8;">
-            <span style="font-size:44px; font-weight:800; color:#1b6fd8; letter-spacing:10px;">${mfaCode}</span>
-          </div>
-          <p style="color:#94a3b8; font-size:12px;">⏱️ Expire dans 10 minutes. Ne le partagez pas.</p>
-        </div>
-      </div>
-    `)
-
-    res.json({ message: 'Code MFA envoyé', mfaRequired: true, email })
+    // Connexion directe - générer JWT
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
+    res.json({
+      message: 'Connexion réussie',
+      token,
+      user: { _id: user._id, nom: user.nom, email: user.email, entreprise: user.entreprise }
+    })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -154,18 +137,16 @@ exports.verifyMFA = async (req, res) => {
     const user = await User.findOne({ email })
     if (!user) return res.status(404).json({ message: 'Utilisateur introuvable' })
     if (user.mfaCode !== code) return res.status(401).json({ message: 'Code incorrect' })
-    if (new Date() > user.mfaExpires) return res.status(401).json({ message: 'Code expiré — reconnectez-vous' })
+    if (new Date() > user.mfaExpires) return res.status(401).json({ message: 'Code expiré — réinscrivez-vous' })
 
+    // Activer le compte
+    user.isVerified = true
     user.mfaCode    = null
     user.mfaExpires = null
+    user.verifyToken = null
     await user.save()
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
-    res.json({
-      message: 'Connexion réussie',
-      token,
-      user: { _id: user._id, nom: user.nom, email: user.email, entreprise: user.entreprise }
-    })
+    res.json({ message: 'Compte activé avec succès ! Vous pouvez maintenant vous connecter.' })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
