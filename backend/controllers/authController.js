@@ -29,12 +29,12 @@ async function sendEmail(to, subject, html) {
   }
 }
 
-// ── REGISTER ──────────────────────────────────────────────────
+// ── REGISTER avec MFA ─────────────────────────────────────────
 exports.register = async (req, res) => {
   try {
     const { nom, prenom, email, password, entreprise, taille, telephone } = req.body;
 
-    // Validation des domaines email
+    // Vérification du domaine email
     const allowedDomains = ['@draexlmaier.com', '@drax.com', '@gmail.com'];
     if (!allowedDomains.some(d => email.endsWith(d))) {
       return res.status(403).json({ 
@@ -52,7 +52,11 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Création de l'utilisateur (activé directement pour simplifier)
+    // Générer code MFA pour l'activation
+    const mfaCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const mfaExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    // Créer l'utilisateur (non activé)
     const user = await User.create({
       nom: nom || '',
       prenom: prenom || '',
@@ -61,26 +65,73 @@ exports.register = async (req, res) => {
       taille: taille || '',
       telephone: telephone || '',
       password: hashedPassword,
-      isVerified: true,           // Activé directement
-      verifyToken: null,
-      mfaCode: null,
-      mfaExpires: null
+      isVerified: false,
+      mfaCode,
+      mfaExpires,
+      verifyToken: null
     });
 
+    // Envoyer le code MFA par email
+    await sendEmail(email, '🔐 Code de vérification - AuditWise', `
+      <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #0b1f45, #1b6fd8); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+          <h1 style="color: white; margin: 0;">🛡️ AuditWise</h1>
+        </div>
+        <div style="background: white; padding: 30px; border: 1px solid #e0eaff; border-radius: 0 0 12px 12px; text-align: center;">
+          <h2 style="color: #0b1f45;">Bonjour ${nom || prenom || email.split('@')[0]},</h2>
+          <p style="color: #6b8cba;">Voici votre code de vérification pour activer votre compte :</p>
+          
+          <div style="background: #f0f6ff; border-radius: 14px; padding: 24px; margin: 25px 0; border: 2px solid #1b6fd8;">
+            <span style="font-size: 42px; font-weight: 800; color: #1b6fd8; letter-spacing: 12px;">${mfaCode}</span>
+          </div>
+
+          <p style="color: #94a3b8; font-size: 13px;">Ce code expire dans <strong>10 minutes</strong>.<br>Ne le partagez avec personne.</p>
+        </div>
+      </div>
+    `);
+
     res.status(201).json({
-      message: 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.',
-      user: {
-        _id: user._id,
-        nom: user.nom,
-        prenom: user.prenom,
-        email: user.email,
-        entreprise: user.entreprise
-      }
+      message: "Compte créé avec succès. Un code de vérification a été envoyé à votre email.",
+      requireMFA: true,
+      email: email
     });
 
   } catch (error) {
     console.error("Erreur register:", error);
-    res.status(500).json({ message: 'Erreur serveur lors de la création du compte.' });
+    res.status(500).json({ message: "Erreur serveur lors de la création du compte." });
+  }
+};
+
+// ── VERIFY MFA (Activation du compte) ─────────────────────────
+exports.verifyMFA = async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
+
+    if (!user.mfaCode || user.mfaCode !== code) {
+      return res.status(401).json({ message: 'Code incorrect' });
+    }
+
+    if (new Date() > user.mfaExpires) {
+      return res.status(401).json({ message: 'Code expiré. Veuillez vous réinscrire.' });
+    }
+
+    // Activer le compte
+    user.isVerified = true;
+    user.mfaCode = null;
+    user.mfaExpires = null;
+    await user.save();
+
+    res.status(200).json({
+      message: 'Compte activé avec succès ! Vous pouvez maintenant vous connecter.',
+      success: true
+    });
+
+  } catch (error) {
+    console.error("Erreur verifyMFA:", error);
+    res.status(500).json({ message: 'Erreur serveur lors de la vérification.' });
   }
 };
 
@@ -97,16 +148,17 @@ exports.login = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Email ou mot de passe incorrect' });
+    if (!user) return res.status(400).json({ message: 'Email ou mot de passe incorrect' });
+
+    if (user.isVerified === false) {
+      return res.status(403).json({ 
+        message: 'Compte non activé. Veuillez vérifier votre email ou vous réinscrire.' 
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Email ou mot de passe incorrect' });
-    }
+    if (!isMatch) return res.status(400).json({ message: 'Email ou mot de passe incorrect' });
 
-    // Générer le token JWT
     const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
@@ -127,11 +179,11 @@ exports.login = async (req, res) => {
 
   } catch (error) {
     console.error("Erreur login:", error);
-    res.status(500).json({ message: 'Erreur serveur lors de la connexion' });
+    res.status(500).json({ message: 'Erreur serveur lors de la connexion.' });
   }
 };
 
-// ── GET USERS (Admin) ─────────────────────────────────────────
+// ── Routes Admin ─────────────────────────────────────────────
 exports.getUsers = async (req, res) => {
   try {
     const users = await User.find({}, 'nom prenom email entreprise isVerified createdAt');
@@ -141,7 +193,6 @@ exports.getUsers = async (req, res) => {
   }
 };
 
-// ── DELETE USER (Admin) ───────────────────────────────────────
 exports.deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
@@ -152,7 +203,6 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-// ── UPDATE USER (Admin) ───────────────────────────────────────
 exports.updateUser = async (req, res) => {
   try {
     const { nom, prenom, email, entreprise } = req.body;
