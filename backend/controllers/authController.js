@@ -17,10 +17,17 @@ const transporter = nodemailer.createTransport({
 })
 
 async function sendEmail(to, subject, html) {
-  await transporter.sendMail({
-    from: `"AuditWise" <${process.env.MAIL_USER}>`,
-    to, subject, html,
-  })
+  try {
+    console.log('📧 Envoi email a:', to)
+    await transporter.sendMail({
+      from: `"AuditWise" <${process.env.MAIL_USER}>`,
+      to, subject, html,
+    })
+    console.log('✅ Email envoye avec succes a:', to)
+  } catch (err) {
+    console.error('❌ Erreur envoi email:', err.message)
+    throw err
+  }
 }
 
 // ── REGISTER ──────────────────────────────────────────────────
@@ -64,6 +71,7 @@ exports.register = async (req, res) => {
       </div>
     `)
 
+    console.log('✅ Compte cree pour:', email)
     res.status(201).json({ message: 'Compte créé ! Entrez le code envoyé par email pour activer votre compte.', requireCode: true, email })
   } catch (error) {
     res.status(500).json({ message: error.message })
